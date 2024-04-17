@@ -1,7 +1,4 @@
 start:
-    ;mov eax, 0C501h
-    ;int 35h         ;Connect the debugger
-    breakpoint
     call ttyClear   ;Clear the teletype
     ;Memory stuff
     lea rbp, mainmsg
@@ -15,6 +12,10 @@ start:
     lea rsp, stacktop    ;Reinitialize stack pointer
     call newProgram         ;Use this to reset program pointers
     mov byte [stateByte], 0 ;Init the byte to 0
+    
+    lea rdx, ctrlBreakHandler
+    mov al, 23h         ;CTRL+C handler
+    call setHandler
 mainLoop:
 ;Entering here resets the program counter but doesnt remove the program from memory
     mov ax, word [firstLinNum]  ;Error occured, restart the program counter
@@ -78,11 +79,8 @@ ctrlBreakHandler:
     iretq
 setHandler:
 ;Called with:
-;   rdi = Pointer to interrupt handler
+;   rdx = Pointer to interrupt handler
 ;   al = Interrupt number
-    push rdx
-    mov rdx, rdi
-    mov ah, 35h
+    mov ah, 25h
     int 21h
-    pop rdx
     ret

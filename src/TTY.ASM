@@ -47,7 +47,11 @@ getLineInput:
     call ttyOutChar ;Echo the char as is, but store it uppercase if cl is even
     test cl, 1      ;UC char if cl is even only
     jnz .gStore
-    call ucChar
+    cmp al, "a"
+    jb .gStore
+    cmp al, "z"
+    ja .gStore
+    sub al, "a" - "A"
 .gStore:
     stosb   ;Increment the pointer, add char to buffer
     inc byte [strLen]   ;Inc char count

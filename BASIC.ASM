@@ -12,7 +12,7 @@ Segment .text align=1 valign=1
 %include "./src/MATH.ASM"
 %include "./src/MEMORY.ASM"
 %include "./data/BASICDAT.ASM"
-Segment dSeg nobits align=1 start=0
+Segment dSeg nobits valign=1 vfollows=.text 
 %include "./data/BSS.ASM"
 Segment programArea align=1 vfollows=dSeg valign=16 ;Para aligned
 ENDOFPROGRAM:

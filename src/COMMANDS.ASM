@@ -424,21 +424,17 @@ cls:
 dbgr:
 ;Hook int 40h to main prog EP to allow returning 
 ;First call to get default BIOS segement selector and attribute word
-    mov bl, 40h
-    mov eax, 0F007h ;Get the descriptor
-    int 35h
-    mov esi, eax    ;Move segment selector info to esi
-    mov ecx, 40h    ;Interrupt number
-;dx preserves the attribute word
-    lea rbx, .farReturn  ;Pointer passed in
-    mov eax, 0F008h ;Set descriptor
-    int 35h
+    mov al, 40h          ;Interrupt number
+    lea edx, .farReturn
+    call setHandler
+
     int 38h ;Call debugger
 .farReturn:
     ;Reconnect CTRL+BREAK handler
     mov rsp, stacktop   ;Immediately reset stack
-    lea rdi, ctrlBreakHandler
-    mov al, 3Bh
+    
+    lea rdx, ctrlBreakHandler
+    mov al, 23h         ;CTRL+C handler
     call setHandler
     
     lea rbp, crlf
