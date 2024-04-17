@@ -10,6 +10,8 @@ start:
     ;Memory stuff
     lea rbp, mainmsg
     call ttyOutString
+    lea rbp, cpyrt
+    call ttyOutString
     call memoryDetection
     lea rbp, bytemsg
     call ttyOutString

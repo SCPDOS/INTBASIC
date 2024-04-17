@@ -1,8 +1,9 @@
-prompt  db "Ok",0Ah,0Dh,0
-mainmsg db "SCR INTBASIC/64 v0.1",0Ah,0Dh,0
-bytemsg db " Bytes free",0Ah,0Dh,0
-crlf    db 0Ah,0Dh,0
-errmsg  db "Error",0Ah,0Dh,0
+prompt  db "Ok",LF,CR,0
+mainmsg db "SCR INTBASIC/64 v0.1",LF,CR,0
+cpyrt   db "Copyright (c) 2022, 2024 Yll Buzoku",LF,CR, "All rights reserved.",CR,LF,0
+bytemsg db " Bytes free",LF,CR,0
+crlf    db LF,CR,0
+errmsg  db "Error",LF,CR,0
 numbers db "0123456789"
 ;startVarChars db "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ;Valid starting chars for a var name
 ;numStartVarChars equ $ - startVarChars
@@ -14,18 +15,22 @@ numVarChars equ $ - varChrs
 ;$ => String variable
 
 ;Error Messages
-noMem   db "Out of memory",0Ah,0Dh,0
-syntax  db "Syntax error",0Ah,0Dh,0
-typeError   db "Type mismatch",0Ah,0Dh,0
-lineNoXist  db "Undefined line number",0Ah,0Dh,0
+noMem   db "Out of memory",LF,CR,0
+syntax  db "Syntax error",LF,CR,0
+typeError   db "Type mismatch",LF,CR,0
+lineNoXist  db "Undefined line number",LF,CR,0
 breakmsg db "Break in ",0
-stkOvflw db "Stack overflow",0Ah,0Dh,0
+stkOvflw db "Stack overflow",LF,CR,0
 
-noWend   db "WHILE without WEND", 0Ah, 0Dh, 0
-noWhile  db "WEND without WHILE", 0Ah, 0Dh, 0
-noFor    db "NEXT without FOR", 0Ah, 0Dh, 0
-noNext   db "FOR without NEXT", 0Ah, 0Dh, 0
-noReturn db "RETURN without GOSUB", 0Ah, 0Dh, 0
-uknowner db "Unprintable error", 0Ah, 0Dh, 0
+noWend   db "WHILE without WEND", LF, CR, 0
+noWhile  db "WEND without WHILE", LF, CR, 0
+noFor    db "NEXT without FOR", LF, CR, 0
+noNext   db "FOR without NEXT", LF, CR, 0
+noReturn db "RETURN without GOSUB", LF, CR, 0
+uknowner db "Unprintable error", LF, CR, 0
 
-divZer   db "Division by zero", 0Ah, 0Dh, 0
+divZer   db "Division by zero", LF, CR, 0
+
+;Simple char equates
+CR  equ 0Dh
+LF  equ 0Ah
