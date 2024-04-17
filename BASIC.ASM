@@ -1,7 +1,7 @@
     [map all ./lst/BASIC.MAP]
     [DEFAULT REL]
     BITS 64
-%include "./src/MEM.INC"
+%include "./data/MEM.INC"
 Segment .text align=1 valign=1
 %include "./src/MAIN.ASM"
 %include "./src/TTY.ASM"
@@ -11,8 +11,8 @@ Segment .text align=1 valign=1
 %include "./src/CTRLFLOW.ASM"
 %include "./src/MATH.ASM"
 %include "./src/MEMORY.ASM"
-%include "./src/BASICDAT.ASM"
+%include "./data/BASICDAT.ASM"
 Segment dSeg nobits align=1 start=0
-%include "./src/BSS.ASM"
-Segment programArea align=1 vfollows=dSeg valign=1
+%include "./data/BSS.ASM"
+Segment programArea align=1 vfollows=dSeg valign=16 ;Para aligned
 ENDOFPROGRAM:

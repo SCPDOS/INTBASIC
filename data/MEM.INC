@@ -1,4 +1,15 @@
 
+;Simple char equates
+CR  equ 0Dh
+LF  equ 0Ah
+BSP equ 08h
+SPC equ 20h
+
+
+%macro breakpoint 0
+    xchg bx, bx
+%endmacro
+
 progLineBlockType   equ 0   ;Program Line
 varBlockType        equ 1   ;Variable block
 datBlockType        equ 2   ;Data block (i.e. a string block)

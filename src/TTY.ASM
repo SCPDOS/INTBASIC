@@ -10,38 +10,45 @@ getLineInput:
     xor al, al    ;Ensure the input line is sanitised
     rep stosb
     pop rdi
+    xor ecx, ecx    ;Use cl as a counter for speech marks, which dictates UC-ing chars
 .getChar:
     call ttyIn
-    cmp al, 0Dh ;Line Feed
+    cmp al, CR ;Carriage return
     je .gliExit
-    cmp al, 08h ;Bspace
+    cmp al, LF
+    je .getChar ;Ignore line feed chars
+    cmp al, BSP ;Bspace
     je .glibspace
     cmp byte [strLen], -2   ;If at max length (255 chars), simply beep and wait for either bspace or enter
     je .gliFull 
+    cmp al, byte '"'
+    je .gspchMk
     test al, al
     je .gliExtendedChar
+    jmp short .gliCheckCase
+.gspchMk:
+;Here if a speech mark.
+    inc cl      ;Speech mark hit, inc count
     jmp short .gliCheckCase
 .glibspace:
     test byte [strLen], -1  ;This will only be zero if strLen=0
     jz .getChar
     dec rdi ;Go back by one position in the input line
     dec byte [strLen]
-    mov al, 08h
+    mov al, BSP
     call ttyOutChar
-    mov al, 20h  
+    mov al, SPC  
     call ttyOutChar
-    mov al, 08h
+    mov al, BSP
     call ttyOutChar
     jmp short .getChar
 .gliCheckCase:
     ;al has char
-    call ttyOutChar ;Echo the char as is, but store it uppercase
-    cmp al, "a"
-    jb .gliccStore
-    cmp al, "z"
-    ja .gliccStore
-    sub al, 20h
-.gliccStore:
+    call ttyOutChar ;Echo the char as is, but store it uppercase if cl is even
+    test cl, 1      ;UC char if cl is even only
+    jnz .gStore
+    call ucChar
+.gStore:
     stosb   ;Increment the pointer, add char to buffer
     inc byte [strLen]   ;Inc char count
     jmp short .getChar
@@ -60,6 +67,19 @@ getLineInput:
     call ttyOutChar
     jmp .getChar
 
+ucChar:
+;Input: al = Char to uppercase
+;Output: al = Adjusted char 
+    push rbx
+    mov rbx, rsp    ;Save the stack ptr
+    push rax    ;Push the char twice on the stack
+    push rax
+    mov eax, 1213h  ;Get DOS to uppercase the char
+    int 2fh         ;Returns the processed char in al
+    mov rsp, rbx    ;Return the stack ptr to where it was
+    pop rbx
+    ret
+
 ttyOutChar:
     push rdx
     mov dl, al
@@ -73,28 +93,27 @@ ttyOutString:
     push rbx
     push rcx
     push rdx
-    push rdi
-    mov rdi, rbp
-    xor eax, eax
-    xor ecx, ecx
-    dec ecx
-    repne scasb     ;Scan for the null
-    dec ecx         ;Remove null from the count
+    push rsi
+    mov rsi, rbp
+    call strlen     ;Get the length of the string to print in ecx
+    dec ecx         ;Drop the terminating null
     mov rdx, rbp    ;Get string ptr
     mov ebx, 1      ;STDOUT
     mov eax, 4000h  ;Write!
-    int 21h     
-    pop rdi
+    int 21h 
+    pop rsi    
     pop rdx
     pop rcx
     pop rbx
     ret
 ttyIn:
 ;Output: al -> ASCII char
-    mov eax, 0700h  ;Input no echo to tty
+    mov eax, 0800h  ;Input no echo to tty
     int 21h
     ret
 ttyClear:
+;Use Int 2Eh to get command.com to violate the hardware abstraction for us.
+;Or just add ANSI clear code to our basic driver (probably easier...)
     mov eax, 0500h  ;Set page zero as the default page
     int 30h
     mov ah, 02h

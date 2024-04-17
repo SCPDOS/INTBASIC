@@ -30,7 +30,3 @@ noReturn db "RETURN without GOSUB", LF, CR, 0
 uknowner db "Unprintable error", LF, CR, 0
 
 divZer   db "Division by zero", LF, CR, 0
-
-;Simple char equates
-CR  equ 0Dh
-LF  equ 0Ah

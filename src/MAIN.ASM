@@ -1,20 +1,18 @@
 start:
-    mov eax, 0C501h
-    int 35h         ;Connect the debugger
+    ;mov eax, 0C501h
+    ;int 35h         ;Connect the debugger
+    breakpoint
     call ttyClear   ;Clear the teletype
-    ;Set the CtrlBreak Handler
-    lea rdi, ctrlBreakHandler
-    mov al, 3Bh
-    call setHandler
-
     ;Memory stuff
     lea rbp, mainmsg
     call ttyOutString
     lea rbp, cpyrt
     call ttyOutString
+    mov rbp, rsp    ;Pass the original stack pointer to the function
     call memoryDetection
     lea rbp, bytemsg
     call ttyOutString
+    lea rsp, stacktop    ;Reinitialize stack pointer
     call newProgram         ;Use this to reset program pointers
     mov byte [stateByte], 0 ;Init the byte to 0
 mainLoop:
@@ -82,17 +80,9 @@ setHandler:
 ;Called with:
 ;   rdi = Pointer to interrupt handler
 ;   al = Interrupt number
-    mov ebp, eax    ;al has interrupt number which we need to save
-    and ebp, 0FFh   ;Zero everything but the bottom byte
-;First call to get default BIOS segement selector and attribute word
-    mov bl, al  ;Set interrupt number 
-    mov eax, 0F007h ;Get the descriptor
-    int 35h
-    mov esi, eax    ;Move segment selector info to esi
-    mov ecx, ebp    ;Get the interrupt number into cl
-;dx preserves the attribute word
-    mov rbx, rdi  ;Pointer passed in rdi
-    mov eax, 0F008h ;Set descriptor
-    int 35h
-    
+    push rdx
+    mov rdx, rdi
+    mov ah, 35h
+    int 21h
+    pop rdx
     ret

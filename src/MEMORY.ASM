@@ -267,47 +267,21 @@ strlen:
 ;Output: rsi = String start
 ;        ecx = String length, inclusive of NULL char
     push rax
-    push rsi
-    xor ecx, ecx    ;Clear counter
-.search:
-    lodsb
-    inc ecx
-    test al, al ;Is this a null char?
-    jnz .search ;Null not found
-.exit:
-    pop rsi
+    push rdi
+    mov rdi, rsi
+    mov eax, 1212h  ;DOS strlen
+    int 2fh
+    pop rdi
     pop rax
     ret
 
 memoryDetection:
-    mov eax, 0E820h
-    int 35h     ;rax = ptr to start, rsi = ptr to data table, each entry 24 bytes
-    jmp short .fsa1
-.findStartAddr:
-    add rsi, 24 ;Goto next entry
-.fsa1:
-    test cx, cx
-    jz .worstCase
-    dec cx
-    mov rbx, qword [rsi]    ;Get the address entry into rbx
-    cmp rbx, rax    
-    jne .findStartAddr
-    mov rax, qword [rsi + 8] ;Get the number of bytes saved into rax
-
-    lea rdx, section.programArea.vstart
-    sub rdx, rbx    ;Get the size of the interpreter and internal data area
-    sub rax, rdx    ;Remove the number of bytes reserved to the interpreter
+;Input: rbp -> End of the memory arena
+;Prints the number of bytes and sets up the internal vars 
+    mov qword [maxMemAddr], rbp
+    lea rsi, section.programArea.vstart
+    mov qword [minMemAddr], rsi
+    sub rbp, rsi    ;Get the number of bytes in the memory arena
+    mov rax, rbp
     call printdecimalword
-    add rbx, rax    ;Add number of bytes to start address
-    mov qword [maxMemAddr], rbx ;Save this address
-.exit:
     ret
-.worstCase:
-;Assume 2Mb MAX memory, rax has base address
-    mov rbx, 200000h    ;2Mb value
-    sub rbx, rax
-    mov rax, rbx    ;Get value in rax
-    call printdecimalword
-    mov qword [maxMemAddr], 200000h
-    ret
-
