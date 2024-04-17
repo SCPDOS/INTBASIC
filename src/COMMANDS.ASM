@@ -418,13 +418,11 @@ getInput:
 ;==========================================================:
 ;==========================================================:
 returnToDOS:
-    mov al, 07h
-    call ttyOutChar
-    jmp start   ;Reset the interpreter
+    int 20h
 cls:
     jmp ttyClear
 dbgr:
-    ;Hook int 40h to main prog EP to allow returning 
+;Hook int 40h to main prog EP to allow returning 
 ;First call to get default BIOS segement selector and attribute word
     mov bl, 40h
     mov eax, 0F007h ;Get the descriptor
