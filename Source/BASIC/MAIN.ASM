@@ -32,6 +32,7 @@ mainLoop:
 ; or store it in the program if it has a line number.
 ;It will keep accepting lines until a line is entered without a line number
     call getLineInput
+    lea rsi, inString   ;Point to the string for the below!
     call decimalToHex   ;Check to see if we have a valid line number
     test ax, ax
     jnz .saveLine

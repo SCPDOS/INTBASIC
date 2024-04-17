@@ -1,5 +1,6 @@
 getLineInput:
-    ;Sets rsi to the inputstring
+;Null terminates the string that was input, replacing the ending CR!
+;Parses the input so that all chars are uppercased except those enclosed in speechmarks
     xor ah, ah
     mov byte [strLen], ah   ;Zero the char counter
     lea rdi, inString   ;Move to start of line
@@ -60,19 +61,38 @@ getLineInput:
     jmp .getChar
 
 ttyOutChar:
-    mov ah, 0Eh
-    int 30h
+    push rdx
+    mov dl, al
+    mov eax, 0200h   ;Output char!
+    int 21h
+    pop rdx
     ret
 ttyOutString:
 ;Print 0 terminated strings
 ;Input: rbp -> String
-    mov eax, 1304h
-    int 30h
+    push rbx
+    push rcx
+    push rdx
+    push rdi
+    mov rdi, rbp
+    xor eax, eax
+    xor ecx, ecx
+    dec ecx
+    repne scasb     ;Scan for the null
+    dec ecx         ;Remove null from the count
+    mov rdx, rbp    ;Get string ptr
+    mov ebx, 1      ;STDOUT
+    mov eax, 4000h  ;Write!
+    int 21h     
+    pop rdi
+    pop rdx
+    pop rcx
+    pop rbx
     ret
 ttyIn:
 ;Output: al -> ASCII char
-    xor ah, ah
-    int 36h
+    mov eax, 0700h  ;Input no echo to tty
+    int 21h
     ret
 ttyClear:
     mov eax, 0500h  ;Set page zero as the default page
