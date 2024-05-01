@@ -70,14 +70,12 @@ getLineInput:
 ucChar:
 ;Input: al = Char to uppercase
 ;Output: al = Adjusted char 
-    push rbx
-    mov rbx, rsp    ;Save the stack ptr
-    push rax    ;Push the char twice on the stack
-    push rax
-    mov eax, 1213h  ;Get DOS to uppercase the char
-    int 2fh         ;Returns the processed char in al
-    mov rsp, rbx    ;Return the stack ptr to where it was
-    pop rbx
+    push rbx    ;Save on original stack
+    push rax    ;Put the word on the stack
+    mov eax, 1213h  ;Uppercase the char in al
+    int 2fh
+    pop rbx     ;Pop off the word we placed on the stack
+    pop rbx     ;Get back original rbx
     ret
 
 ttyOutChar:
