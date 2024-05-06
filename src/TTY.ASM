@@ -112,13 +112,19 @@ ttyIn:
 ttyClear:
 ;Use Int 2Eh to get command.com to violate the hardware abstraction for us.
 ;Or just add ANSI clear code to our basic driver (probably easier...)
-    mov eax, 0500h  ;Set page zero as the default page
-    int 30h
-    mov ah, 02h
-    xor edx, edx    ;Set screen cursor to top right corner
-    mov bh, dl      ;Set cursor for page 0
-    int 30h
-    mov bh, 07h     ;Grey/Black attribs
-    mov eax, 0600h  ;Clear whole screen
-    int 30h
+    ;mov eax, 0500h  ;Set page zero as the default page
+    ;int 30h
+    ;mov ah, 02h
+    ;xor edx, edx    ;Set screen cursor to top right corner
+    ;mov bh, dl      ;Set cursor for page 0
+    ;int 30h
+    ;mov bh, 07h     ;Grey/Black attribs
+    ;mov eax, 0600h  ;Clear whole screen
+    ;int 30h
+    ;ret
+    push rsi
+    lea rsi, .s
+    int 2Eh
+    pop rsi
     ret
+.s: db 03h, "CLS",CR
