@@ -15,4 +15,3 @@ Segment .text align=1 valign=1
 Segment dSeg nobits valign=10h vfollows=.text       ;Para aligned
 %include "./data/BSS.ASM"
 Segment programArea align=1 vfollows=dSeg valign=16 ;Para aligned
-ENDOFPROGRAM:

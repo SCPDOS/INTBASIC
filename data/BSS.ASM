@@ -4,7 +4,6 @@ oflowbuff   resq 10        ;10 Qwords of overflow buffer
 stack       resq 200h - 8 - 10*8  ;Save total 4Kb stack space
 stacktop    resq 1
 
-maxLineLen  equ 256
 inString    resb maxLineLen         ;256 character input string
 
 ;This string is used for printing long numbers and saving

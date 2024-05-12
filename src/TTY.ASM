@@ -123,8 +123,11 @@ ttyClear:
     ;int 30h
     ;ret
     push rsi
+    push r8
     lea rsi, .s
     int 2Eh
+    pop r8
     pop rsi
+    mov r9, r8  ;Persist the address in both (never used)
     ret
 .s: db 03h, "CLS",CR

@@ -215,7 +215,7 @@ newProgram:
     mov qword [mcbChain], rax   ;Create a mock MCB here
 
     mov rdx, rax
-    mov cx, word [rax + memBlock.wBlockSize]
+    movzx ecx, word [rax + memBlock.wBlockSize]
     mov rdi, rax
     xor al, al
     rep stosb   ;Sanitise the old first allocation

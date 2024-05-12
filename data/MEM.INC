@@ -17,10 +17,12 @@ datBlockType        equ 2   ;Data block (i.e. a string block)
 notLastMemBlock equ "t" ;Used for blocks that are not the last block
 lastMemBlock    equ "r" ;Used by the last block to indicate end of chain
 
+maxLineLen  equ 256
+
 %macro memBlockM 0 ;Memory block Macro
-    .bSignature resb 1      ;Valid Signature
-    .wBlockSize resw 1      ;Total block size in bytes
-    .bBlockType resb 1      ;Block type, program line, variable or string
+    .bSignature db ?      ;Valid Signature
+    .wBlockSize dw ?      ;Total block size in bytes
+    .bBlockType db ?      ;Block type, program line, variable or string
 %endmacro
 
 struc memBlock
@@ -29,21 +31,21 @@ endstruc
 
 struc progLineBlock
     memBlockM               ;Common memory block header
-    .wLineNum   resw 1      ;Line number, up to 65535
-    .qPtr       resq 1      ;Pointer to the next line, or -1 if last line
-    .sLine      resb maxLineLen  ;Maximum length 255, keep null char but 
+    .wLineNum   dw ?      ;Line number, up to 65535
+    .qPtr       dq ?      ;Pointer to the next line, or -1 if last line
+    .sLine      db maxLineLen dup (?)  ;Maximum length 255, keep null char but
     ;                             NOT LINE NUMBER OR PRECEEDING SPACES
 endstruc
 
 struc varBlock
     memBlockM               ;Common memory block header
-    .qValue     resq 1      ;One value qword
+    .qValue     dq ?      ;One value qword
     .sVarName:              ;Up to 40 chars for the var name
 endstruc
 
 struc stringBlock
     memBlockM
-    .string     resb maxLineLen    ;Strings allocate 256 chars
+    .string     db maxLineLen dup (?)    ;Strings allocate 256 chars
     .sVarName:              ;Up to 40 chars for the var name
 endstruc
 
@@ -64,10 +66,10 @@ GOSUBsig    equ 0A5h
 ;Control stack data structures
 
 struc forStruct
-    .specQword  resq 1  ;Special qword (see function description)
-    .cntrPtr    resq 1  ;Pointer to counter variable
-    .limitValue resq 1  ;At what value, or after, do we stop the loop 
-    .stepValue  resq 1  ;By how much do we increase on each iteration
+    .specQword  dq ?  ;Special qword (see function description)
+    .cntrPtr    dq ?  ;Pointer to counter variable
+    .limitValue dq ?  ;At what value, or after, do we stop the loop 
+    .stepValue  dq ?  ;By how much do we increase on each iteration
 ;Special qword:
 ; Byte 7 = Offset into the line for next instruction after FOR
 ; Bytes[6:5] = Line number of portion after FOR (either FOR line or line after FOR)
@@ -78,7 +80,7 @@ struc forStruct
 endstruc
 
 struc whileStruct
-    .specQword  resq 1  ;Special qword
+    .specQword  dq ?  ;Special qword
 ;Special qword:
 ; Byte 7 = Offset into the line for the condition to evaluate
 ; Bytes[6:5] = Line number of WHILE 
@@ -89,7 +91,7 @@ struc whileStruct
 endstruc
 
 struc gosubStruct
-    .specQword  resq 1  ;Special qword
+    .specQword  dq ?  ;Special qword
 ;Special qword:
 ; Byte 7 =  Offset in line for either first : after GOSUB or ASCII NULL (end of line)
 ; Bytes[6:5] = Line number of GOSUB 
