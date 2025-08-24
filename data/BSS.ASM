@@ -27,5 +27,3 @@ lastBlock   resq 1  ;Pointer to the last block
 firstLinPtr resq 1  ;Pointer to the programs' first line 
 firstLinNum resw 1  ;Line number of the first line of the program
 currentLine resw 1  ;Currently being executed line number
-
-bssLen: ;Needed to compute the resident portion load location

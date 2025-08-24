@@ -274,14 +274,3 @@ strlen:
     pop rdi
     pop rax
     ret
-
-memoryDetection:
-;Input: rbp -> End of the memory arena
-;Prints the number of bytes and sets up the internal vars 
-    mov qword [maxMemAddr], rbp
-    lea rsi, section.programArea.vstart
-    mov qword [minMemAddr], rsi
-    sub rbp, rsi    ;Get the number of bytes in the memory arena
-    mov rax, rbp
-    call printdecimalword
-    ret

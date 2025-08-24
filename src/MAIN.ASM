@@ -6,7 +6,19 @@ start:
     lea rbp, cpyrt
     call ttyOutString
     mov rbp, rsp    ;Pass the original stack pointer to the function
-    call memoryDetection
+
+    mov qword [maxMemAddr], rbp
+    lea rsi, section.programArea.vstart
+    mov qword [minMemAddr], rsi
+    sub rbp, rsi    ;Get the number of bytes in the memory arena
+    mov rax, rbp
+    call printdecimalword   ;Preserves rax and rsi
+;Now we sanitize this memory arena. Consider moving into newProgram
+; so that when we reset, we also refresh the memory arena.
+    mov rdi, rsi
+    mov ecx, eax
+    xor eax, eax
+    rep stosb
     lea rbp, bytemsg
     call ttyOutString
     lea rsp, stacktop    ;Reinitialize stack pointer
